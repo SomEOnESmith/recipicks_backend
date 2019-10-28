@@ -38,9 +38,6 @@ class Recipe(models.Model):
 	meal = models.ManyToManyField(Meal, related_name="recipes")
 	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
 
-	class Meta:
-		verbose_name_plural = "recipies"
-
 	def __str__(self):
 		return self.title
 
