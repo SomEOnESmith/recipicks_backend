@@ -1,5 +1,7 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver 
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length=100)
@@ -53,3 +55,25 @@ class Step(models.Model):
 	def __str__(self):
 		return self.recipe.title
 
+
+
+class Profile(models.Model):
+	GENDER = (
+		("Female", "Female"),
+		("Male", "Male")
+	)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+	phone = models.PositiveIntegerField(null=True, blank=True)
+	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
+	date_of_birth = models.DateField(null=True, blank=True)
+	image = models.ImageField(null=True, blank=True)
+	liked_recipes =  models.ForeignKey(Recipe, null=True, blank=True, related_name="liked_recipes", on_delete=models.SET_NULL)
+	disliked_recipes = models.ForeignKey(Recipe, null=True, blank=True, related_name="disliked_recipes", on_delete=models.SET_NULL)
+
+	def __str__(self):
+		return self.user.username
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user= instance)
