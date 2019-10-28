@@ -8,24 +8,18 @@ class Ingredient(models.Model):
 		return self.name
 
 
-class MealType(models.Model):
+class Course(models.Model):
 	name = models.CharField(max_length=100)
 
 	def __str__(self):
 		return self.name
 
 
-class MealTime(models.Model):
+class Meal(models.Model):
 	name = models.CharField(max_length=100)
 
 	def __str__(self):
 		return self.name
-
-
-class Step(models.Model):
-	instruction = models.TextField()
-	required_time = models.DurationField()
-	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
 
 
 class Cuisine(models.Model):
@@ -40,8 +34,8 @@ class Recipe(models.Model):
 	description = models.TextField()
 	image = models.ImageField(blank=True)
 	ingredients = models.ManyToManyField(Ingredient, related_name="recipes")
-	meal_type = models.ManyToManyField(MealType, related_name="recipes")
-	meal_time = models.ManyToManyField(MealTime, related_name="recipes")
+	course = models.ManyToManyField(Course, related_name="recipes")
+	meal = models.ManyToManyField(Meal, related_name="recipes")
 	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
 
 	class Meta:
@@ -52,3 +46,9 @@ class Recipe(models.Model):
 
 	def get_total_time(self):
 		return sum([time for time in self.steps.required_time])
+
+
+class Step(models.Model):
+	instruction = models.TextField()
+	required_time = models.DurationField()
+	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
