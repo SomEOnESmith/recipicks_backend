@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import (Recipe, Cuisine, Ingredient, Course, Meal, Step)
+from .models import (Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step)
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -14,6 +14,35 @@ class UserCreateSerializer(serializers.ModelSerializer):
 		new_user.set_password(validated_data['password'])
 		new_user.save()
 		return validated_data
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = User
+		fields = ["username", "first_name", "last_name", "email"]
+		read_only_fields = ['username']
+
+
+class CreateUpdateProfileSerializer(serializers.ModelSerializer):
+	user = UserSerializer()
+	
+	class Meta:
+		model = Profile
+		fields = '__all__'
+
+	def update(self, instance, validated_data):
+		"""
+		removing (user) key from validated_data dictionary to use update the
+		user which has read only username field
+		"""
+		user_field = validated_data.pop('user', None)
+		temp_user_serializer = UserSerializer()
+		super().update(instance, validated_data)
+		super(UserSerializer, temp_user_serializer).update(instance.user, user_field)
+		return instance
+
+
   
 class CuisineSerializer(serializers.ModelSerializer):
 	class Meta:
