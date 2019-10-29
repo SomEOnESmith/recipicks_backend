@@ -17,7 +17,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
 	class Meta:
 		model = User
 		fields = ["username", "first_name", "last_name", "email"]
@@ -32,10 +31,6 @@ class CreateUpdateProfileSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 	def update(self, instance, validated_data):
-		"""
-		removing (user) key from validated_data dictionary to use update the
-		user which has read only username field
-		"""
 		user_field = validated_data.pop('user', None)
 		temp_user_serializer = UserSerializer()
 		super().update(instance, validated_data)
@@ -49,38 +44,45 @@ class CuisineSerializer(serializers.ModelSerializer):
 		model = Cuisine
 		fields = '__all__'
 
+
 class IngredientSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Ingredient
 		fields = '__all__'
+
 
 class CourseSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Course
 		fields = '__all__'
 
+
 class MealSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Meal
 		fields = '__all__'
+
 
 class StepsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Step
 		fields = '__all__'
 
+
 class RecipesListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Recipe
 		fields = ['id','title','image']
+
 
 class RecipeDetailsSerializer(serializers.ModelSerializer):
 	cuisine = CuisineSerializer()
 	course = CourseSerializer(many=True)
 	meal = MealSerializer(many=True)
 	ingredients = IngredientSerializer(many=True)
-	steps = StepsSerializer(many=True) 
+	steps = StepsSerializer(many=True)
+
 	class Meta:
 		model = Recipe
-		fields =  ['id','title','description','image','cuisine','course','meal','ingredients', 'steps']
+		fields =  '__all__'
 		

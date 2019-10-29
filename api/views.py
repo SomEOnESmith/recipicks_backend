@@ -1,6 +1,6 @@
 from rest_framework.generics import (
 	CreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
-	)
+)
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer,
 	RecipeDetailsSerializer, RecipesListSerializer
