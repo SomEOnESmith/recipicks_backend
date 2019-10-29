@@ -3,9 +3,9 @@ from rest_framework.generics import (
 )
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer,
-	RecipeDetailsSerializer, RecipesListSerializer
+	RecipeDetailsSerializer, RecipesListSerializer, IngredientSerializer
 	 )
-from .models import Recipe, Profile
+from .models import Recipe, Profile, Ingredient
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -31,3 +31,9 @@ class RecipeDetailsView(RetrieveAPIView):
 	serializer_class = RecipeDetailsSerializer
 	lookup_field = 'id'
 	lookup_url_kwarg = 'recipe_id'
+
+
+class IngredientsListView(ListAPIView):
+	queryset = Ingredient.objects.all()
+	serializer_class = IngredientSerializer
+ 
