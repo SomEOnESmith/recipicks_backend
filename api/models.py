@@ -5,7 +5,19 @@ from django.dispatch import receiver
 
 
 class Ingredient(models.Model):
+	CATEGORY = (
+		("Protein", "Protein"),
+		("Vegetable", "Vegetable"),
+		("Fruit", "Fruit"),
+		("Dairy", "Dairy"),
+		("Grain", "Grain"),
+		("Bean", "Bean"),
+		("Nut", "Nut"),
+	)
+
 	name = models.CharField(max_length=100)
+	category = models.CharField(choices=CATEGORY, max_length=20, null=True, blank=True)
+
 
 	def __str__(self):
 		return self.name
