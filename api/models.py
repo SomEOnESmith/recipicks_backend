@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver 
 
+
 class Ingredient(models.Model):
 	name = models.CharField(max_length=100)
 
@@ -42,7 +43,7 @@ class Recipe(models.Model):
 
 	def __str__(self):
 		return self.title
-
+#fix time to signal post save
 	def get_total_time(self):
 		return sum([time for time in self.steps.required_time])
 
@@ -51,6 +52,7 @@ class Step(models.Model):
 	instruction = models.TextField()
 	required_time = models.DurationField()
 	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
+
 	
 	def __str__(self):
 		return self.recipe.title
@@ -67,8 +69,8 @@ class Profile(models.Model):
 	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
 	date_of_birth = models.DateField(null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
-	liked_recipes =  models.ForeignKey(Recipe, null=True, blank=True, related_name="liked_recipes", on_delete=models.SET_NULL)
-	disliked_recipes = models.ForeignKey(Recipe, null=True, blank=True, related_name="disliked_recipes", on_delete=models.SET_NULL)
+	liked_recipes =  models.ManyToManyField(Recipe, null=True, blank=True, related_name="liked_recipes")
+	disliked_recipes = models.ManyToManyField(Recipe, null=True, blank=True, related_name="disliked_recipes")
 
 	def __str__(self):
 		return self.user.username
@@ -76,4 +78,4 @@ class Profile(models.Model):
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user= instance)
+        Profile.objects.create(user=instance)
