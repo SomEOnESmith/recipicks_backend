@@ -57,7 +57,7 @@ class Recipe(models.Model):
 		return self.title
 #fix time to signal post save
 	def get_total_time(self):
-		return sum([time for time in self.steps.required_time])
+		return sum([time for time.required_time in self.steps])
 
 
 class Step(models.Model):
