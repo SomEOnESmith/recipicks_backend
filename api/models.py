@@ -81,8 +81,8 @@ class Profile(models.Model):
 	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
 	date_of_birth = models.DateField(null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
-	liked_recipes =  models.ManyToManyField(Recipe, null=True, blank=True, related_name="liked_recipes")
-	disliked_recipes = models.ManyToManyField(Recipe, null=True, blank=True, related_name="disliked_recipes")
+	liked_recipes =  models.ManyToManyField(Recipe,  blank=True, related_name="liked_recipes")
+	disliked_recipes = models.ManyToManyField(Recipe,  blank=True, related_name="disliked_recipes")
 
 	def __str__(self):
 		return self.user.username

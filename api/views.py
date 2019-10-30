@@ -36,4 +36,12 @@ class RecipeDetailsView(RetrieveAPIView):
 class IngredientsListView(ListAPIView):
 	queryset = Ingredient.objects.all()
 	serializer_class = IngredientSerializer
+
+
+class RecipesByMealListView(ListAPIView):
+	serializer_class = RecipesListSerializer
+
+	def get_queryset(self):
+		return Recipe.objects.filter(meal__name=self.kwargs['meal_type'])	
+
  
