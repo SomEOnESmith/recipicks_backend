@@ -57,7 +57,7 @@ class Recipe(models.Model):
 		return self.title
 #fix time to signal post save
 	def get_total_time(self):
-		return sum([time for time in self.steps.required_time])
+		return sum([time for time.required_time in self.steps])
 
 
 class Step(models.Model):
@@ -77,12 +77,12 @@ class Profile(models.Model):
 		("Male", "Male")
 	)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-	phone = models.PositiveIntegerField(null=True, blank=True)
+	phone = models.PositiveIntegerField(blank=True, null=True)
 	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
-	date_of_birth = models.DateField(null=True, blank=True)
+	date_of_birth = models.DateField(blank=True, null=True)
 	image = models.ImageField(null=True, blank=True)
-	liked_recipes =  models.ManyToManyField(Recipe,  blank=True, related_name="liked_recipes")
-	disliked_recipes = models.ManyToManyField(Recipe,  blank=True, related_name="disliked_recipes")
+	liked_recipes =  models.ManyToManyField(Recipe, blank=True, related_name="liked_recipes")
+	disliked_recipes = models.ManyToManyField(Recipe, blank=True, related_name="disliked_recipes")
 
 	def __str__(self):
 		return self.user.username
