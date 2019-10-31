@@ -9,6 +9,7 @@ from .serializers import (
 	 )
 from .models import Recipe, Profile, Ingredient
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -26,7 +27,9 @@ class ProfileView(RetrieveUpdateAPIView):
 class RecipeListView(ListAPIView):
 	queryset = Recipe.objects.all()
 	serializer_class = RecipesListSerializer
- 
+	filter_backends = [SearchFilter,]
+	search_fields = ['title','meal__name', 'cuisine__name', 'course__name']
+
 
 class RecipeDetailsView(RetrieveAPIView):
 	queryset = Recipe.objects.all()
@@ -39,19 +42,6 @@ class IngredientsListView(ListAPIView):
 	queryset = Ingredient.objects.all()
 	serializer_class = IngredientSerializer
 
-
-class RecipesByMealListView(ListAPIView):
-	serializer_class = RecipesListSerializer
-
-	def get_queryset(self):
-		return Recipe.objects.filter(meal__name=self.kwargs['meal_type'])	
-
-
-class RecipesByCuisineListView(ListAPIView):
-	serializer_class = RecipesListSerializer
-
-	def get_queryset(self):
-		return Recipe.objects.filter(cuisine__name=self.kwargs['cuisine_name'])
 
 #wrong ListCreateAPIView 
 class RecipesByIngredientListView(APIView):
