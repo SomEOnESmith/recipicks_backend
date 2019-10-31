@@ -74,7 +74,6 @@ class RecipesListSerializer(serializers.ModelSerializer):
 		model = Recipe
 		fields = ['id','title','image']
 
-
 class RecipeDetailsSerializer(serializers.ModelSerializer):
 	cuisine = CuisineSerializer()
 	course = CourseSerializer(many=True)
@@ -85,4 +84,8 @@ class RecipeDetailsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Recipe
 		fields =  '__all__'
+
+
+
+
 		
