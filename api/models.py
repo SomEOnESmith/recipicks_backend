@@ -14,10 +14,8 @@ class Ingredient(models.Model):
 		("Bean", "Bean"),
 		("Nut", "Nut"),
 	)
-
 	name = models.CharField(max_length=100)
 	category = models.CharField(choices=CATEGORY, max_length=20, null=True, blank=True)
-
 
 	def __str__(self):
 		return self.name
@@ -62,13 +60,12 @@ class Recipe(models.Model):
 
 class Step(models.Model):
 	instruction = models.TextField()
+	order = models.PositiveIntegerField(blank=True, null=True)
 	required_time = models.DurationField()
 	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
-
 	
 	def __str__(self):
 		return self.recipe.title
-
 
 
 class Profile(models.Model):
