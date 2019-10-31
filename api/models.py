@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver 
 
 
@@ -50,22 +50,29 @@ class Recipe(models.Model):
 	course = models.ManyToManyField(Course, related_name="recipes")
 	meal = models.ManyToManyField(Meal, related_name="recipes")
 	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
+	total_time = models.PositiveIntegerField(default=0)
 
 	def __str__(self):
 		return self.title
-#fix time to signal post save
+
 	def get_total_time(self):
-		return sum([time for time.required_time in self.steps])
+		self.total_time = sum([step.required_time for step in self.steps.all()])
+		self.save()
 
 
 class Step(models.Model):
 	instruction = models.TextField()
 	order = models.PositiveIntegerField(blank=True, null=True)
-	required_time = models.DurationField()
+	required_time = models.PositiveIntegerField()
 	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
 	
 	def __str__(self):
 		return self.recipe.title
+
+@receiver(post_save, sender=Step)
+@receiver(post_delete, sender=Step)
+def update_recipe(sender, instance, **kwargs):
+	instance.recipe.get_total_time()
 
 
 class Profile(models.Model):
@@ -86,5 +93,5 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+	if created:
+		Profile.objects.create(user=instance)
