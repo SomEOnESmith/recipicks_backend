@@ -48,7 +48,7 @@ class IngredientsListView(ListAPIView):
 class RecipesByIngredientListView(APIView):
 	def post(self,request):
 		recipes = Recipe.objects.filter(ingredients__id__in=request.data).distinct()
-		filtered_recipes = [recipe if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) else None for recipe in recipes]
+		filtered_recipes = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data)]
 		return Response(RecipesListSerializer(filtered_recipes, many=True).data)
 
 
