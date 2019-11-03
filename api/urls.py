@@ -13,6 +13,4 @@ urlpatterns = [
     path('recipes/<int:recipe_id>/', RecipeDetailsView.as_view(), name='recipe-detail'),
     path('ingredients/', IngredientsListView.as_view(), name='ingredients-list'),
     path('recipes/ingredients/', RecipesByIngredientListView.as_view(), name='recipes-ingredients'),
-
-
 ]

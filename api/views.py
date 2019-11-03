@@ -2,11 +2,13 @@ from rest_framework.generics import (
 	CreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView,
 )
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count
 
 from .serializers import (
-	UserCreateSerializer, CreateUpdateProfileSerializer,
-	RecipeDetailsSerializer, RecipesListSerializer, IngredientSerializer
-	 )
+	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer,
+	RecipesListSerializer, IngredientSerializer
+)
 from .models import Recipe, Profile, Ingredient
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
@@ -43,27 +45,11 @@ class IngredientsListView(ListAPIView):
 	serializer_class = IngredientSerializer
 
 
-#wrong ListCreateAPIView 
 class RecipesByIngredientListView(APIView):
-	serializer_class = RecipesListSerializer
 	def post(self,request):
-		print(request.data)
-
-
-
-
-	# def get_queryset(self):
-	# 	# Step 1: need to loop through the list of recived ingredients using request.data
-
-	# 	# Step 2: need to make condition for the filtering example:
-	# 	"""
-	# 	contition = 
-	# 	return Recipe.objects.filter(ingredient__name= request.data.ingredient[0] && ingredient__name= request.data.ingredient[1])
-
-	# 	"""
-		# return Recipe.objects.all()
-
-
+		recipes = Recipe.objects.filter(ingredients__id__in=request.data).distinct()
+		filtered_recipes = [recipe if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) else None for recipe in recipes]
+		return Response(RecipesListSerializer(filtered_recipes, many=True).data)
 
 
 
