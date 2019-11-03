@@ -56,7 +56,7 @@ class Recipe(models.Model):
 		return self.title
 
 	def get_total_time(self):
-		self.total_time = sum([step.required_time for step in self.steps.all()])
+		self.total_time = sum(self.steps.values_list('required_time', flat=True))
 		self.save()
 
 
@@ -68,6 +68,7 @@ class Step(models.Model):
 	
 	def __str__(self):
 		return self.recipe.title
+
 
 @receiver(post_save, sender=Step)
 @receiver(post_delete, sender=Step)
