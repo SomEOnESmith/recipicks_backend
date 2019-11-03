@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver 
+from django.dispatch import receiver
+from datetime import timedelta
 
 
 class Ingredient(models.Model):
@@ -50,20 +51,20 @@ class Recipe(models.Model):
 	course = models.ManyToManyField(Course, related_name="recipes")
 	meal = models.ManyToManyField(Meal, related_name="recipes")
 	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
-	total_time = models.PositiveIntegerField(default=0)
+	total_time = models.DurationField(default='00:00:00')
 
 	def __str__(self):
 		return self.title
 
 	def get_total_time(self):
-		self.total_time = sum(self.steps.values_list('required_time', flat=True))
+		self.total_time = sum(self.steps.values_list('required_time', flat=True), timedelta())
 		self.save()
 
 
 class Step(models.Model):
 	instruction = models.TextField()
 	order = models.PositiveIntegerField(blank=True, null=True)
-	required_time = models.PositiveIntegerField()
+	required_time = models.DurationField()
 	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
 	
 	def __str__(self):
