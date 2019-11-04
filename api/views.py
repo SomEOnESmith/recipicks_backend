@@ -53,4 +53,4 @@ class RecipesByIngredientListView(APIView):
 		# The following code does not work if exact_match and user_has_excess lists are empty:
 		# user_has_missing = recipes.difference(exact_match, user_has_excess)
 		# It throws this error "  AttributeError: 'list' object has no attribute 'query'  "
-		return Response(RecipesListSerializer(user_has_excess, many=True).data, status=200)
+		return Response(RecipesListSerializer(recipes, many=True).data, status=200)
