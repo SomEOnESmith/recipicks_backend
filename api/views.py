@@ -3,12 +3,14 @@ from rest_framework.generics import (
 )
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import (
-	UserCreateSerializer, CreateUpdateProfileSerializer,
-	RecipeDetailsSerializer, RecipesListSerializer, IngredientSerializer
-	 )
-from .models import Recipe, Profile, Ingredient
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
+
+from .serializers import (
+	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer, 
+	RecipesListSerializer, IngredientSerializer
+)
+from .models import Recipe, Profile, Ingredient
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -26,6 +28,8 @@ class ProfileView(RetrieveUpdateAPIView):
 class RecipeListView(ListAPIView):
 	queryset = Recipe.objects.all()
 	serializer_class = RecipesListSerializer
+	filter_backends = [SearchFilter,]
+	search_fields = ['title','meal__name', 'cuisine__name', 'course__name']
  
 
 class RecipeDetailsView(RetrieveAPIView):
@@ -40,34 +44,14 @@ class IngredientsListView(ListAPIView):
 	serializer_class = IngredientSerializer
 
 
-class RecipesByMealListView(ListAPIView):
-	serializer_class = RecipesListSerializer
-
-	def get_queryset(self):
-		return Recipe.objects.filter(meal__name=self.kwargs['meal_type'])	
-
-
-class RecipesByCuisineListView(ListAPIView):
-	serializer_class = RecipesListSerializer
-
-	def get_queryset(self):
-		return Recipe.objects.filter(cuisine__name=self.kwargs['cuisine_name'])
-
-
 class RecipesByIngredientListView(APIView):
 	def post(self,request):
 		recipes = Recipe.objects.filter(ingredients__id__in=request.data).distinct()
-		exact_match = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True))==request.data]
-		excess_ingredients = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) and recipe not in exact_match]
-		filtered_recipes = []
-		if excess_ingredients and excess_ingredients:
-			filtered_recipes = exact_match.extend(excess_ingredients)
-		elif exact_match:
-			filtered_recipes = exact_match
-		elif excess_ingredients:
-			filtered_recipes = excess_ingredients
-		recipes = [recipe for recipe in recipes if recipe not in filtered_recipes]
-		if recipes:
-			filtered_recipes.extend(recipes)
-		return Response(RecipesListSerializer(exact_match, many=True).data)
-
+		exact_match = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True))==set(request.data)]
+		user_has_excess = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) and recipe not in exact_match]
+		# user_has_missing = recipes.difference(exact_match, user_has_excess)
+		user_has_missing = [recipe for recipe in recipes if recipe not in exact_match and recipe not in user_has_excess]
+		print('Exact Match:', exact_match)
+		print('User has Excess Ingredients:', user_has_excess)
+		print('User has Missing Ingredients:', user_has_missing)
+		return Response(RecipesListSerializer(user_has_excess, many=True).data, status=200)
