@@ -3,15 +3,14 @@ from rest_framework.generics import (
 )
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Count
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
 
 from .serializers import (
-	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer,
+	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer, 
 	RecipesListSerializer, IngredientSerializer
 )
 from .models import Recipe, Profile, Ingredient
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.filters import SearchFilter
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -31,7 +30,7 @@ class RecipeListView(ListAPIView):
 	serializer_class = RecipesListSerializer
 	filter_backends = [SearchFilter,]
 	search_fields = ['title','meal__name', 'cuisine__name', 'course__name']
-
+ 
 
 class RecipeDetailsView(RetrieveAPIView):
 	queryset = Recipe.objects.all()
@@ -48,8 +47,10 @@ class IngredientsListView(ListAPIView):
 class RecipesByIngredientListView(APIView):
 	def post(self,request):
 		recipes = Recipe.objects.filter(ingredients__id__in=request.data).distinct()
-		filtered_recipes = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data)]
-		return Response(RecipesListSerializer(filtered_recipes, many=True).data)
-
-
-
+		exact_match = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True))==set(request.data)]
+		user_has_excess = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) and recipe not in exact_match]
+		user_has_missing = [recipe for recipe in recipes if recipe not in exact_match and recipe not in user_has_excess]
+		# The following code does not work if exact_match and user_has_excess lists are empty:
+		# user_has_missing = recipes.difference(exact_match, user_has_excess)
+		# It throws this error "  AttributeError: 'list' object has no attribute 'query'  "
+		return Response(RecipesListSerializer(recipes, many=True).data, status=200)

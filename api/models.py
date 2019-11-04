@@ -67,9 +67,11 @@ class Step(models.Model):
 	required_time = models.DurationField()
 	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
 	
+	class Meta:
+		ordering = ['order',]
+
 	def __str__(self):
 		return self.recipe.title
-
 
 @receiver(post_save, sender=Step)
 @receiver(post_delete, sender=Step)
@@ -82,7 +84,7 @@ class Profile(models.Model):
 		("Female", "Female"),
 		("Male", "Male")
 	)
-	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	phone = models.PositiveIntegerField(blank=True, null=True)
 	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
 	date_of_birth = models.DateField(blank=True, null=True)
