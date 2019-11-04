@@ -17,9 +17,34 @@ class Ingredient(models.Model):
 	)
 	name = models.CharField(max_length=100)
 	category = models.CharField(choices=CATEGORY, max_length=20, null=True, blank=True)
+	color = models.CharField(max_length=20, null=True, blank=True)
 
 	def __str__(self):
 		return self.name
+
+@receiver(post_save, sender=Ingredient)
+@receiver(post_delete, sender=Ingredient)
+def create_color(sender, instance, created,**kwargs):
+	if created:
+		if (instance.category == "Protein"):
+			instance.color = "red"
+		elif (instance.category == "Vegetable"):
+			instance.color = "green"
+		elif (instance.category == "Fruit"): 
+			instance.color = "orange"
+		elif (instance.category == "Dairy"):
+			instance.color = "white"
+		elif (instance.category == "Grain"):
+			instance.color = "blue"
+		elif (instance.category == "Bean"):
+			instance.color = "yellow"
+		else:
+			instance.color =="purple"
+		instance.save()
+# def get_readonly_fields(self, request, obj=None):
+#     if obj:
+#         return self.readonly_fields + ('person',)
+#     return self.readonly_fields
 
 
 class Course(models.Model):
