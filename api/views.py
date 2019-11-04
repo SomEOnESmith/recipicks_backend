@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
 
 from .serializers import (
-	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer, 
+	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer,
 	RecipesListSerializer, IngredientSerializer
 )
 from .models import Recipe, Profile, Ingredient
@@ -30,7 +30,7 @@ class RecipeListView(ListAPIView):
 	serializer_class = RecipesListSerializer
 	filter_backends = [SearchFilter,]
 	search_fields = ['title','meal__name', 'cuisine__name', 'course__name']
- 
+
 
 class RecipeDetailsView(RetrieveAPIView):
 	queryset = Recipe.objects.all()
@@ -53,4 +53,4 @@ class RecipesByIngredientListView(APIView):
 		# The following code does not work if exact_match and user_has_excess lists are empty:
 		# user_has_missing = recipes.difference(exact_match, user_has_excess)
 		# It throws this error "  AttributeError: 'list' object has no attribute 'query'  "
-		return Response(RecipesListSerializer(recipes, many=True).data, status=200)
+		return Response({'exact_match': RecipesListSerializer(exact_match, many=True).data, 'user_has_excess_ingredients': RecipesListSerializer(user_has_excess, many=True).data, 'user_has_missing_ingredients': RecipesListSerializer(user_has_missing, many=True).data}, status=200)
