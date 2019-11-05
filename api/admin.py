@@ -12,13 +12,10 @@ class RecipeAdmin(admin.ModelAdmin):
 		StepInline,
 	]
 
-class IngredientAdmin(admin.ModelAdmin):
-	model = Ingredient
-	readonly_fields = ('color', )
 
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Profile)
-admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Ingredient)
 admin.site.register(Cuisine)
 admin.site.register(Course)
 admin.site.register(Meal)
