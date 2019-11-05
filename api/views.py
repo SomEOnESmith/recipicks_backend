@@ -49,8 +49,10 @@ class RecipesByIngredientListView(APIView):
 		recipes = Recipe.objects.filter(ingredients__id__in=request.data).distinct()
 		exact_match = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True))==set(request.data)]
 		user_has_excess = [recipe for recipe in recipes if set(recipe.ingredients.values_list('id',flat=True)).issubset(request.data) and recipe not in exact_match]
-		user_has_missing = [recipe for recipe in recipes if recipe not in exact_match and recipe not in user_has_excess]
-		# The following code does not work if exact_match and user_has_excess lists are empty:
-		# user_has_missing = recipes.difference(exact_match, user_has_excess)
-		# It throws this error "  AttributeError: 'list' object has no attribute 'query'  "
-		return Response({'exact_match': RecipesListSerializer(exact_match, many=True).data, 'user_has_excess_ingredients': RecipesListSerializer(user_has_excess, many=True).data, 'user_has_missing_ingredients': RecipesListSerializer(user_has_missing, many=True).data}, status=200)
+		user_has_missing = list(set(recipes).difference(exact_match, user_has_excess))
+		data = {
+			'exact_match': RecipesListSerializer(exact_match, context={'request': request}, many=True).data,
+			'user_has_excess_ingredients': RecipesListSerializer(user_has_excess, context={'request': request}, many=True).data,
+			'user_has_missing_ingredients': RecipesListSerializer(user_has_missing, context={'request': request}, many=True).data
+		}
+		return Response(data, status=200)
