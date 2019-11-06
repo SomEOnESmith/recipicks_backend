@@ -41,8 +41,6 @@ class IngredientListView(ListAPIView):
 
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
-	filter_backends = [SearchFilter,]
-	search_fields = ['title','meal__name', 'cuisine__name', 'course__name']
 
 	def search(self, recipes, ingredients):
 		results = {'exact': [], 'excess': [], 'missing': []}
@@ -57,14 +55,21 @@ class RecipeListView(APIView):
 		return results
 
 	def get(self,request):
-		meal = request.GET.get("meal")
+		recipes = Recipe.objects.all()
 		cuisine = request.GET.get("cuisine")
-		course = request.GET.get("course")
+		meal = request.GET.get("meal[]")
+		course = request.GET.get("course[]")
 		ingredients = request.GET.getlist("ingredients[]")
+		if cuisine:
+			recipes = recipes.filter(cuisine=cuisine)
+		if meal:
+			recipes = recipes.filter(meal__in=meal)
+		if course:
+			recipes = recipes.filter(course__in=course)
 		context = {'request': request}
 		if not ingredients:
 			return Response(self.serializer_class(Recipe.objects.all(), context=context, many=True).data)
-		recipes = Recipe.objects.filter(ingredients__id__in=ingredients).distinct()
+		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
 		results = self.search(recipes=recipes, ingredients=ingredients)
 		data = {
 			'perfect_match': self.serializer_class(results['exact'], context=context, many=True).data,
