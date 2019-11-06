@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import (
 	UserCreateAPIView, ProfileView, RecipeListView,
- 	RecipeDetailsView, IngredientsListView, RecipesByIngredientListView
+ 	RecipeDetailsView, IngredientsListView, RecipesByIngredientListView, CuisineListView
  	)
 
 urlpatterns = [
@@ -13,4 +13,6 @@ urlpatterns = [
     path('recipes/<int:recipe_id>/', RecipeDetailsView.as_view(), name='recipe-detail'),
     path('ingredients/', IngredientsListView.as_view(), name='ingredients-list'),
     path('recipes/ingredients/', RecipesByIngredientListView.as_view(), name='recipes-ingredients'),
+    path('cuisines/', CuisineListView.as_view(), name='cuisine-list'),
+
 ]

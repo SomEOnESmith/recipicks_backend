@@ -8,9 +8,9 @@ from rest_framework.filters import SearchFilter
 
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailsSerializer,
-	RecipesListSerializer, IngredientSerializer
+	RecipesListSerializer, IngredientSerializer, CuisineSerializer
 )
-from .models import Recipe, Profile, Ingredient
+from .models import Recipe, Profile, Ingredient, Cuisine 
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -56,3 +56,10 @@ class RecipesByIngredientListView(APIView):
 			'user_has_missing_ingredients': RecipesListSerializer(user_has_missing, context={'request': request}, many=True).data
 		}
 		return Response(data, status=200)
+
+
+class CuisineListView(ListAPIView):
+	queryset = Cuisine.objects.all()
+	serializer_class = CuisineSerializer
+
+
