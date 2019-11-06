@@ -57,8 +57,8 @@ class RecipeListView(APIView):
 	def get(self,request):
 		recipes = Recipe.objects.all()
 		cuisine = request.GET.get("cuisine")
-		meal = request.GET.get("meal[]")
-		course = request.GET.get("course[]")
+		meal = request.GET.getlist("meal[]")
+		course = request.GET.getlist("course[]")
 		ingredients = request.GET.getlist("ingredients[]")
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
