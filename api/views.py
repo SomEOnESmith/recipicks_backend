@@ -10,9 +10,11 @@ from rest_framework.status import HTTP_200_OK
 from .serializers import (
 
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
-	RecipeListSerializer, IngredientSerializer, CuisineSerializer
+	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
+	MealSerializer
+
 )
-from .models import Recipe, Profile, Ingredient, Cuisine 
+from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -83,3 +85,19 @@ class RecipeListView(APIView):
 class CuisineListView(ListAPIView):
 	queryset = Cuisine.objects.all()
 	serializer_class = CuisineSerializer
+
+
+
+class CourseListView(ListAPIView):
+	queryset = Course.objects.all()
+	serializer_class = CourseSerializer
+
+
+
+class MealListView(ListAPIView):
+	queryset = Meal.objects.all()
+	serializer_class = MealSerializer
+
+
+
+
