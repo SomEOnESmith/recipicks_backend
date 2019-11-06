@@ -68,7 +68,7 @@ class RecipeListView(APIView):
 			recipes = recipes.filter(course__in=course)
 		context = {'request': request}
 		if not ingredients:
-			return Response(self.serializer_class(Recipe.objects.all(), context=context, many=True).data)
+			return Response(self.serializer_class(recipes, context=context, many=True).data)
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
 		results = self.search(recipes=recipes, ingredients=ingredients)
 		data = {

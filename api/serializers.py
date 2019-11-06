@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import (Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step)
+from .models import Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class CreateUpdateProfileSerializer(serializers.ModelSerializer):
 		super(UserSerializer, temp_user_serializer).update(instance.user, user_field)
 		return instance
 
-  
+
 class CuisineSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Cuisine
