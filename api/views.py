@@ -44,6 +44,7 @@ class RecipeListView(APIView):
 
 	def search(self, recipes, user_ingredients):
 		results = {'exact': [], 'excess': [], 'missing': []}
+		user_ingredients = list(map(int, user_ingredients))
 		for recipe in recipes:
 			recipe_ingredients = recipe.ingredients.values_list('id', flat=True)
 			if recipe_ingredients == user_ingredients:
