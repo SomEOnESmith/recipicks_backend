@@ -8,10 +8,11 @@ from rest_framework.filters import SearchFilter
 from rest_framework.status import HTTP_200_OK
 
 from .serializers import (
+
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
-	RecipeListSerializer, IngredientSerializer
+	RecipeListSerializer, IngredientSerializer, CuisineSerializer
 )
-from .models import Recipe, Profile, Ingredient
+from .models import Recipe, Profile, Ingredient, Cuisine 
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -71,3 +72,8 @@ class RecipeListView(APIView):
 			'user_missing_ings': self.serializer_class(results['missing'], context=context, many=True).data
 		}
 		return Response(data, status=HTTP_200_OK)
+
+
+class CuisineListView(ListAPIView):
+	queryset = Cuisine.objects.all()
+	serializer_class = CuisineSerializer
