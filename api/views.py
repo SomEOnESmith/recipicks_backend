@@ -42,13 +42,13 @@ class IngredientListView(ListAPIView):
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
 
-	def search(self, recipes, ingredients):
+	def search(self, recipes, user_ingredients):
 		results = {'exact': [], 'excess': [], 'missing': []}
 		for recipe in recipes:
-			ingredients = recipe.ingredients.values_list('id', flat=True)
-			if ingredients ==ingredients:
+			recipe_ingredients = recipe.ingredients.values_list('id', flat=True)
+			if recipe_ingredients == user_ingredients:
 				results['exact'].append(recipe)
-			elif set(ingredients).issubset(ingredients):
+			elif set(recipe_ingredients).issubset(user_ingredients):
 				results['excess'].append(recipe)
 			else:
 				results['missing'].append(recipe)
@@ -70,7 +70,7 @@ class RecipeListView(APIView):
 		if not ingredients:
 			return Response(self.serializer_class(recipes, context=context, many=True).data)
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
-		results = self.search(recipes=recipes, ingredients=ingredients)
+		results = self.search(recipes=recipes, user_ingredients=ingredients)
 		data = {
 			'perfect_match': self.serializer_class(results['exact'], context=context, many=True).data,
 			'user_excess_ings': self.serializer_class(results['excess'], context=context, many=True).data,
