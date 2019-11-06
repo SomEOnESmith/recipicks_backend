@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import (
 	UserCreateAPIView, ProfileView, RecipeListView,
- 	RecipeDetailView, IngredientListView,, CuisineListView
+ 	RecipeDetailView, IngredientListView, CuisineListView
  )
 
 urlpatterns = [
