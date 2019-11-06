@@ -37,7 +37,6 @@ class CreateUpdateProfileSerializer(serializers.ModelSerializer):
 		super(UserSerializer, temp_user_serializer).update(instance.user, user_field)
 		return instance
 
-
   
 class CuisineSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -63,29 +62,25 @@ class MealSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
-class StepsSerializer(serializers.ModelSerializer):
+class StepSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Step
 		fields = '__all__'
 
 
-class RecipesListSerializer(serializers.ModelSerializer):
+class RecipeListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Recipe
 		fields = ['id','title','image']
 
-class RecipeDetailsSerializer(serializers.ModelSerializer):
+
+class RecipeDetailSerializer(serializers.ModelSerializer):
 	cuisine = CuisineSerializer()
 	course = CourseSerializer(many=True)
 	meal = MealSerializer(many=True)
 	ingredients = IngredientSerializer(many=True)
-	steps = StepsSerializer(many=True)
+	steps = StepSerializer(many=True)
 
 	class Meta:
 		model = Recipe
 		fields =  '__all__'
-
-
-
-
-		
