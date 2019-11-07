@@ -53,7 +53,7 @@ class RecipeListView(APIView):
 		user_ingredients = list(map(int, user_ingredients))
 		for recipe in recipes:
 			recipe_ingredients = recipe.ingredients.values_list('id', flat=True)
-			if recipe_ingredients == user_ingredients:
+			if list(recipe_ingredients) == user_ingredients:
 				results['perfect'].append(recipe)
 			elif set(recipe_ingredients).issubset(user_ingredients):
 				results['excess'].append(recipe)
