@@ -12,5 +12,5 @@ urlpatterns = [
 	path('recipes/', RecipeListView.as_view(), name='recipes-list'),
 	path('recipes/<int:recipe_id>/', RecipeDetailView.as_view(), name='recipe-detail'),
 	path('filters/', FilterView.as_view(), name='filters'),
-  path('recipe/create/', RecipeCreateAPIView.as_view(), name='recipe-create')
+	path('recipe/create/', RecipeCreateAPIView.as_view(), name='recipe-create')
 ]
