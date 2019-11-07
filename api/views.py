@@ -27,6 +27,17 @@ class ProfileView(RetrieveUpdateAPIView):
 		return self.request.user.profile
 
 
+class FilterView(APIView):
+	def get(self, request):
+		data = {
+			'ingredients': IngredientSerializer(Ingredient.objects.all(), many=True).data,
+			'cuisines': CuisineSerializer(Cuisine.objects.all(), many=True).data,
+			'courses': CourseSerializer(Course.objects.all(), many=True).data,
+			'meals': MealSerializer(Meal.objects.all(), many=True).data
+		}
+		return Response(data, status=HTTP_200_OK)
+
+
 class RecipeDetailView(RetrieveAPIView):
 	queryset = Recipe.objects.all()
 	serializer_class = RecipeDetailSerializer
@@ -34,15 +45,10 @@ class RecipeDetailView(RetrieveAPIView):
 	lookup_url_kwarg = 'recipe_id'
 
 
-class IngredientListView(ListAPIView):
-	queryset = Ingredient.objects.all()
-	serializer_class = IngredientSerializer
-
-
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
 
-	def search(self, recipes, user_ingredients):
+	def filter_by_ingredients(self, recipes, user_ingredients):
 		results = {'perfect': [], 'excess': [], 'missing': []}
 		user_ingredients = list(map(int, user_ingredients))
 		for recipe in recipes:
@@ -57,12 +63,10 @@ class RecipeListView(APIView):
 
 	def get(self,request):
 		recipes = Recipe.objects.all()
-		print(request.GET)
 		cuisine = request.GET.get("cuisine")
 		meal = request.GET.getlist("meal[]")
 		course = request.GET.getlist("course[]")
 		ingredients = request.GET.getlist("ingredients[]")
-
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meal:
@@ -73,25 +77,10 @@ class RecipeListView(APIView):
 		if not ingredients:
 			return Response(self.serializer_class(recipes, context=context, many=True).data)
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
-		results = self.search(recipes=recipes, user_ingredients=ingredients)
+		results = self.filter_by_ingredients(recipes=recipes, user_ingredients=ingredients)
 		data = {
 			'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
-			'user_excess_ings': self.serializer_class(results['excess'], context=context, many=True).data,
-			'user_missing_ings': self.serializer_class(results['missing'], context=context, many=True).data
+			'user_excess_ingrs': self.serializer_class(results['excess'], context=context, many=True).data,
+			'user_missing_ingrs': self.serializer_class(results['missing'], context=context, many=True).data
 		}
 		return Response(data, status=HTTP_200_OK)
-
-
-class CuisineListView(ListAPIView):
-	queryset = Cuisine.objects.all()
-	serializer_class = CuisineSerializer
-
-
-class CourseListView(ListAPIView):
-	queryset = Course.objects.all()
-	serializer_class = CourseSerializer
-
-
-class MealListView(ListAPIView):
-	queryset = Meal.objects.all()
-	serializer_class = MealSerializer
