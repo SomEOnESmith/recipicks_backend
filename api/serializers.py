@@ -80,6 +80,12 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
 		fields =  '__all__'
 
 
+class RecipeSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Recipe
+		exclude = ['id',]
+
+
 class RecipeListSerializer(serializers.ModelSerializer):
 	meal = MealSerializer(many=True)
 	cuisine = CuisineSerializer()

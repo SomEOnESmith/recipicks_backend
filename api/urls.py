@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import (
 	UserCreateAPIView, ProfileView, RecipeListView,
-	RecipeDetailView, FilterView
+	RecipeDetailView, FilterView, RecipeCreateAPIView
 )
 
 urlpatterns = [
@@ -11,5 +11,6 @@ urlpatterns = [
 	path("profile/", ProfileView.as_view(), name="profile"),
 	path('recipes/', RecipeListView.as_view(), name='recipes-list'),
 	path('recipes/<int:recipe_id>/', RecipeDetailView.as_view(), name='recipe-detail'),
-	path('filters/', FilterView.as_view(), name='filters')
+	path('filters/', FilterView.as_view(), name='filters'),
+	path('recipe/create/', RecipeCreateAPIView.as_view(), name='recipe-create')
 ]

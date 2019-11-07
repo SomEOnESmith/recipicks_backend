@@ -10,7 +10,7 @@ from rest_framework.status import HTTP_200_OK
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
 	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
-	MealSerializer
+	MealSerializer, RecipeSerializer
 )
 from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
 
@@ -84,3 +84,8 @@ class RecipeListView(APIView):
 			'user_missing_ingrs': self.serializer_class(results['missing'], context=context, many=True).data
 		}
 		return Response(data, status=HTTP_200_OK)
+
+
+class RecipeCreateAPIView(CreateAPIView):
+	serializer_class = RecipeSerializer
+	permission_classes = [IsAuthenticated]
