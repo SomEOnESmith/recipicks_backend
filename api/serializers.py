@@ -44,12 +44,6 @@ class CuisineSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
-class IngredientSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Ingredient
-		fields = '__all__'
-
-
 class CourseSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Course
@@ -62,18 +56,16 @@ class MealSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
+class IngredientSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Ingredient
+		fields = '__all__'
+
+
 class StepSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Step
 		fields = '__all__'
-
-
-class RecipeListSerializer(serializers.ModelSerializer):
-	meal = MealSerializer(many=True)
-	cuisine = CuisineSerializer()
-	class Meta:
-		model = Recipe
-		fields = ['id','title','image', 'meal', 'cuisine','total_time']
 
 
 class RecipeDetailSerializer(serializers.ModelSerializer):
@@ -94,3 +86,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 		exclude = ['id',]
 
 
+class RecipeListSerializer(serializers.ModelSerializer):
+	meal = MealSerializer(many=True)
+	cuisine = CuisineSerializer()
+
+	class Meta:
+		model = Recipe
+		fields = ['id','title','image', 'meal', 'cuisine', 'ingredients','total_time']
