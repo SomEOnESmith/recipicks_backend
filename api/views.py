@@ -11,7 +11,7 @@ from .serializers import (
 
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
 	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
-	MealSerializer
+	MealSerializer, RecipeSerializer
 
 )
 from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
@@ -98,6 +98,11 @@ class MealListView(ListAPIView):
 	queryset = Meal.objects.all()
 	serializer_class = MealSerializer
 
+
+
+class RecipeCreateAPIView(CreateAPIView):
+	serializer_class = RecipeSerializer
+	permission_classes = [IsAuthenticated]
 
 
 

@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import (
 	UserCreateAPIView, ProfileView, RecipeListView,
  	RecipeDetailView, IngredientListView, CuisineListView,
- 	MealListView, CourseListView
+ 	MealListView, CourseListView, RecipeCreateAPIView
  )
 
 urlpatterns = [
@@ -17,5 +17,6 @@ urlpatterns = [
     path('cuisines/', CuisineListView.as_view(), name='cuisine-list'),
     path('meals/', MealListView.as_view(), name='meal-list'),
     path('courses/', CourseListView.as_view(), name='course-list'),
+    path('recipe/create/', RecipeCreateAPIView.as_view(), name='recipe-create'),
 
 ]
