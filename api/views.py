@@ -8,11 +8,9 @@ from rest_framework.filters import SearchFilter
 from rest_framework.status import HTTP_200_OK
 
 from .serializers import (
-
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
 	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
 	MealSerializer
-
 )
 from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
 
@@ -45,12 +43,12 @@ class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
 
 	def search(self, recipes, user_ingredients):
-		results = {'exact': [], 'excess': [], 'missing': []}
+		results = {'perfect': [], 'excess': [], 'missing': []}
 		user_ingredients = list(map(int, user_ingredients))
 		for recipe in recipes:
 			recipe_ingredients = recipe.ingredients.values_list('id', flat=True)
 			if recipe_ingredients == user_ingredients:
-				results['exact'].append(recipe)
+				results['perfect'].append(recipe)
 			elif set(recipe_ingredients).issubset(user_ingredients):
 				results['excess'].append(recipe)
 			else:
@@ -59,10 +57,12 @@ class RecipeListView(APIView):
 
 	def get(self,request):
 		recipes = Recipe.objects.all()
+		print(request.GET)
 		cuisine = request.GET.get("cuisine")
 		meal = request.GET.getlist("meal[]")
 		course = request.GET.getlist("course[]")
 		ingredients = request.GET.getlist("ingredients[]")
+
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meal:
@@ -75,7 +75,7 @@ class RecipeListView(APIView):
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
 		results = self.search(recipes=recipes, user_ingredients=ingredients)
 		data = {
-			'perfect_match': self.serializer_class(results['exact'], context=context, many=True).data,
+			'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
 			'user_excess_ings': self.serializer_class(results['excess'], context=context, many=True).data,
 			'user_missing_ings': self.serializer_class(results['missing'], context=context, many=True).data
 		}
@@ -87,17 +87,11 @@ class CuisineListView(ListAPIView):
 	serializer_class = CuisineSerializer
 
 
-
 class CourseListView(ListAPIView):
 	queryset = Course.objects.all()
 	serializer_class = CourseSerializer
 
 
-
 class MealListView(ListAPIView):
 	queryset = Meal.objects.all()
 	serializer_class = MealSerializer
-
-
-
-
