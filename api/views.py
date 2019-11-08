@@ -67,7 +67,6 @@ class RecipeListView(APIView):
 		meals = loads(request.GET.get("meals"))
 		courses = loads(request.GET.get("courses"))
 		ingredients = loads(request.GET.get("ingredients"))
-		print(meals,courses,cuisine)
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meals:
