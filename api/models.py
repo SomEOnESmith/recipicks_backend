@@ -14,6 +14,8 @@ class Ingredient(models.Model):
 		("Grain", "Grain"),
 		("Bean", "Bean"),
 		("Nut", "Nut"),
+		("Others", "Others"),
+
 	)
 	name = models.CharField(max_length=100)
 	category = models.CharField(choices=CATEGORY, max_length=20, null=True, blank=True)
