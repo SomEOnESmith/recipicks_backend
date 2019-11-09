@@ -83,7 +83,7 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Recipe
-		exclude = ['id',]
+		fields = '__all__'
 
 
 class RecipeListSerializer(serializers.ModelSerializer):

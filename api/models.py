@@ -53,7 +53,7 @@ class Recipe(models.Model):
 	course = models.ManyToManyField(Course, related_name="recipes")
 	meal = models.ManyToManyField(Meal, related_name="recipes")
 	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
-	total_time = models.DurationField(default='00:00:00')
+	total_time = models.DurationField(null=True, blank=True)
 
 	def __str__(self):
 		return self.title
