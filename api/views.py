@@ -7,6 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
 from rest_framework.status import HTTP_200_OK
 from json import loads
+# Optimizing Search imports
+from django.core import serializers
+# import json
+import numpy as np
+import pandas as pd
+from numba import njit
 
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
@@ -46,6 +52,17 @@ class RecipeDetailView(RetrieveAPIView):
 	lookup_url_kwarg = 'recipe_id'
 
 
+@njit
+def divide(a, b):
+    res = np.empty(a.shape)
+    for i in range(len(a)):
+        if b[i] != 0:
+            res[i] = a[i] / b[i]
+        else:
+            res[i] = 0
+    return res
+
+
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
 
@@ -76,8 +93,46 @@ class RecipeListView(APIView):
 		context = {'request': request}
 		if not ingredients:
 			return Response(self.serializer_class(recipes, context=context, many=True).data)
-		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
+		recipes = recipes.filter(ingredients__in=ingredients).distinct()
+
+		print(np.array(self.serializer_class(recipes, context=context, many=True).data))
+
+		# print(list(recipes.values()))
+		# df = pd.DataFrame(list(recipes.values()))
+
+		# json_data = loads(serializers.serialize("json", recipes))
+		# print(json_data)
+
+		# recipes_array = np.array(json_data)
+
+		# print(recipes_array)
+
+		# print(recipes_array[0])
+		# print(recipes_array[0]['fields']['ingredients'])
+		# print(recipes_array[recipes_array['fields']['ingredients'].length > 1])
+
+		# df2 = pd.DataFrame(json_data)
+		# df3 = pd.DataFrame(df2.fields)
+
+		# print(df2.fields[0]['ingredients'])
+		# print(df2.fields)
+		# print([data['fields'] for data in json_data])
+
+		# print(list(map(json_data['fields'], json_data)))
+
+		# print(df2)
+
 		results = self.filter_by_ingredients(recipes=recipes, user_ingredients=set(ingredients))
+		recipes = np.array(list(recipes.values()))
+		
+		# print(recipes)
+		# print(df)
+		# print(df[df['id']==1])
+
+		# print(df2[set(df2.fields.ingredients.values_list('id', flat=True)) == set(ingredients)])
+		# print(recipes[recipes.id == 1])
+		# print(recipes[ set(recipes.ingredients.values_list('id', flat=True)) == set(ingredients) ] )
+
 		data = {
 			'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
 			'user_excess_ingrs': self.serializer_class(results['excess'], context=context, many=True).data,
