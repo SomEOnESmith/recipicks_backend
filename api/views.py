@@ -16,18 +16,6 @@ from .serializers import (
 from .models import Course, Cuisine, Ingredient, Meal, Profile, Recipe
 
 
-class UserCreateAPIView(CreateAPIView):
-	serializer_class = UserCreateSerializer
-
-
-class ProfileView(RetrieveUpdateAPIView):
-	serializer_class = CreateUpdateProfileSerializer
-	permission_classes = (IsAuthenticated,)
-
-	def get_object(self):
-		return self.request.user.profile
-
-
 class FilterView(APIView):
 	def get(self, request):
 		data = {
@@ -37,6 +25,11 @@ class FilterView(APIView):
 			'meals': MealSerializer(Meal.objects.all(), many=True).data
 		}
 		return Response(data, status=HTTP_200_OK)
+
+
+class RecipeCreateAPIView(CreateAPIView):
+	serializer_class = RecipeCreateSerializer
+	permission_classes = (IsAuthenticated,)
 
 
 class RecipeDetailView(RetrieveAPIView):
@@ -86,6 +79,13 @@ class RecipeListView(APIView):
 		return Response(data, status=HTTP_200_OK)
 
 
-class RecipeCreateAPIView(CreateAPIView):
-	serializer_class = RecipeCreateSerializer
+class ProfileView(RetrieveUpdateAPIView):
+	serializer_class = CreateUpdateProfileSerializer
 	permission_classes = (IsAuthenticated,)
+
+	def get_object(self):
+		return self.request.user.profile
+
+
+class UserCreateAPIView(CreateAPIView):
+	serializer_class = UserCreateSerializer
