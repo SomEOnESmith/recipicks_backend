@@ -11,7 +11,7 @@ from json import loads
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
 	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
-	MealSerializer, RecipeSerializer
+	MealSerializer, RecipeCreateSerializer
 )
 from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
 
@@ -87,5 +87,5 @@ class RecipeListView(APIView):
 
 
 class RecipeCreateAPIView(CreateAPIView):
-	serializer_class = RecipeSerializer
+	serializer_class = RecipeCreateSerializer
 	permission_classes = [IsAuthenticated]
