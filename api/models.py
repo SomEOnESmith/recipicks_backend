@@ -18,7 +18,7 @@ class Ingredient(models.Model):
 
 	)
 	name = models.CharField(max_length=100)
-	category = models.CharField(choices=CATEGORY, max_length=20, null=True, blank=True)
+	category = models.CharField(choices=CATEGORY, default="Others", max_length=20)
 
 	def __str__(self):
 		return self.name
@@ -48,26 +48,26 @@ class Cuisine(models.Model):
 class Recipe(models.Model):
 	title = models.CharField(max_length=100)
 	description = models.TextField()
-	image = models.ImageField(blank=True)
-	ingredients = models.ManyToManyField(Ingredient, related_name="recipes")
-	course = models.ManyToManyField(Course, related_name="recipes")
-	meal = models.ManyToManyField(Meal, related_name="recipes")
-	cuisine = models.ForeignKey(Cuisine, null=True, related_name="recipes", on_delete=models.SET_NULL)
+	image = models.ImageField()
+	ingredients = models.ManyToManyField("Ingredient", related_name="recipes")
+	courses = models.ManyToManyField("Course", related_name="recipes")
+	meals = models.ManyToManyField("Meal", related_name="recipes")
+	cuisine = models.ForeignKey("Cuisine", null=True, related_name="recipes", on_delete=models.SET_NULL)
 	total_time = models.DurationField(null=True, blank=True)
 
 	def __str__(self):
 		return self.title
 
 	def get_total_time(self):
-		self.total_time = sum(self.steps.values_list('required_time', flat=True), timedelta())
+		self.total_time = sum(self.steps.values_list("required_time", flat=True), timedelta())
 		self.save()
 
 
 class Step(models.Model):
 	instruction = models.TextField()
-	order = models.PositiveIntegerField(blank=True, null=True)
+	order = models.PositiveIntegerField(default=0)
 	required_time = models.DurationField()
-	recipe = models.ForeignKey(Recipe, related_name="steps", on_delete=models.CASCADE)
+	recipe = models.ForeignKey("Recipe", related_name="steps", on_delete=models.CASCADE)
 	
 	class Meta:
 		ordering = ['order',]
@@ -81,18 +81,23 @@ def update_recipe(sender, instance, **kwargs):
 	instance.recipe.get_total_time()
 
 
+class Image(models.Model):
+	image = models.ImageField()
+	recipe = models.ForeignKey("Recipe", related_name="images", on_delete=models.CASCADE)
+
+
 class Profile(models.Model):
 	GENDER = (
 		("Female", "Female"),
 		("Male", "Male")
 	)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	phone = models.PositiveIntegerField(blank=True, null=True)
+	phone = models.PositiveIntegerField(null=True)
 	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
-	date_of_birth = models.DateField(blank=True, null=True)
+	date_of_birth = models.DateField(null=True)
 	image = models.ImageField(null=True, blank=True)
-	liked_recipes =  models.ManyToManyField(Recipe, blank=True, related_name="liked_recipes")
-	disliked_recipes = models.ManyToManyField(Recipe, blank=True, related_name="disliked_recipes")
+	liked_recipes =  models.ManyToManyField("Recipe", blank=True, related_name="liked_recipes")
+	disliked_recipes = models.ManyToManyField("Recipe", blank=True, related_name="disliked_recipes")
 
 	def __str__(self):
 		return self.user.username
