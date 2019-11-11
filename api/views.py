@@ -11,7 +11,7 @@ from json import loads
 from .serializers import (
 	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
 	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
-	MealSerializer, RecipeSerializer
+	MealSerializer, RecipeCreateSerializer
 )
 from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
 
@@ -70,9 +70,9 @@ class RecipeListView(APIView):
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meals:
-			recipes = recipes.filter(meal__in=meals)
+			recipes = recipes.filter(meals__in=meals)
 		if courses:
-			recipes = recipes.filter(course__in=courses)
+			recipes = recipes.filter(courses__in=courses)
 		context = {'request': request}
 		if not ingredients:
 			return Response(self.serializer_class(recipes, context=context, many=True).data)
@@ -87,5 +87,5 @@ class RecipeListView(APIView):
 
 
 class RecipeCreateAPIView(CreateAPIView):
-	serializer_class = RecipeSerializer
+	serializer_class = RecipeCreateSerializer
 	permission_classes = [IsAuthenticated]

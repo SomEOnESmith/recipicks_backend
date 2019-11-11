@@ -1,6 +1,8 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step
+from drf_writable_nested import WritableNestedModelSerializer
+from django.contrib.auth.models import User
+
+from .models import Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step, Image
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -80,16 +82,31 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
 		fields =  '__all__'
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = Recipe
+		model = Image
 		fields = '__all__'
 
 
+class StepCreateSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Step
+		exclude = ('recipe', 'id')
+
+
+class RecipeCreateSerializer(WritableNestedModelSerializer):
+	steps = StepCreateSerializer(many=True)
+	# images = ImageSerializer(many=True)
+
+	class Meta:
+		model = Recipe
+		exclude = ('total_time','image')
+
+
 class RecipeListSerializer(serializers.ModelSerializer):
-	meal = MealSerializer(many=True)
+	meals = MealSerializer(many=True)
 	cuisine = CuisineSerializer()
 
 	class Meta:
 		model = Recipe
-		fields = ['id','title','image', 'meal', 'cuisine', 'ingredients','total_time']
+		exclude = ('description', 'courses')
