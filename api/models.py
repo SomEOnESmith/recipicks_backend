@@ -49,10 +49,10 @@ class Recipe(models.Model):
 	title = models.CharField(max_length=100)
 	description = models.TextField()
 	image = models.ImageField()
-	ingredients = models.ManyToManyField("Ingredient", related_name="recipes")
 	courses = models.ManyToManyField("Course", related_name="recipes")
-	meals = models.ManyToManyField("Meal", related_name="recipes")
 	cuisine = models.ForeignKey("Cuisine", null=True, related_name="recipes", on_delete=models.SET_NULL)
+	ingredients = models.ManyToManyField("Ingredient", related_name="recipes")
+	meals = models.ManyToManyField("Meal", related_name="recipes")
 	total_time = models.DurationField(null=True, blank=True)
 
 	def __str__(self):
@@ -92,10 +92,10 @@ class Profile(models.Model):
 		("Male", "Male")
 	)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	phone = models.PositiveIntegerField(null=True)
-	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
 	date_of_birth = models.DateField(null=True)
+	gender = models.CharField(choices=GENDER, max_length=6, null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
+	phone = models.PositiveIntegerField(null=True)
 	liked_recipes =  models.ManyToManyField("Recipe", blank=True, related_name="liked_recipes")
 	disliked_recipes = models.ManyToManyField("Recipe", blank=True, related_name="disliked_recipes")
 
