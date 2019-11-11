@@ -70,9 +70,9 @@ class RecipeListView(APIView):
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meals:
-			recipes = recipes.filter(meal__in=meals)
+			recipes = recipes.filter(meals__in=meals)
 		if courses:
-			recipes = recipes.filter(course__in=courses)
+			recipes = recipes.filter(courses__in=courses)
 		context = {'request': request}
 		if not ingredients:
 			return Response(self.serializer_class(recipes, context=context, many=True).data)

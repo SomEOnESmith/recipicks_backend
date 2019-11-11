@@ -104,9 +104,9 @@ class RecipeCreateSerializer(WritableNestedModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-	meal = MealSerializer(many=True)
+	meals = MealSerializer(many=True)
 	cuisine = CuisineSerializer()
 
 	class Meta:
 		model = Recipe
-		exclude = ('description', 'course')
+		exclude = ('description', 'courses')
