@@ -2,18 +2,18 @@ from rest_framework.generics import (
 	CreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView,
 )
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.filters import SearchFilter
 from rest_framework.status import HTTP_200_OK
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
 from json import loads
 
 from .serializers import (
-	UserCreateSerializer, CreateUpdateProfileSerializer, RecipeDetailSerializer,
-	RecipeListSerializer, IngredientSerializer, CuisineSerializer, CourseSerializer,
-	MealSerializer, RecipeCreateSerializer
+	CourseSerializer, CreateUpdateProfileSerializer, CuisineSerializer,
+	IngredientSerializer, MealSerializer, RecipeCreateSerializer,
+	RecipeDetailSerializer, RecipeListSerializer, UserCreateSerializer
 )
-from .models import Recipe, Profile, Ingredient, Cuisine, Course, Meal
+from .models import Course, Cuisine, Ingredient, Meal, Profile, Recipe
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -22,7 +22,7 @@ class UserCreateAPIView(CreateAPIView):
 
 class ProfileView(RetrieveUpdateAPIView):
 	serializer_class = CreateUpdateProfileSerializer
-	permission_classes = [IsAuthenticated]
+	permission_classes = (IsAuthenticated,)
 
 	def get_object(self):
 		return self.request.user.profile
@@ -88,4 +88,4 @@ class RecipeListView(APIView):
 
 class RecipeCreateAPIView(CreateAPIView):
 	serializer_class = RecipeCreateSerializer
-	permission_classes = [IsAuthenticated]
+	permission_classes = (IsAuthenticated,)
