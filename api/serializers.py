@@ -21,8 +21,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ["username", "first_name", "last_name", "email"]
-		read_only_fields = ['username']
+		fields = ("username", "first_name", "last_name", "email")
+		read_only_fields = ('username',)
 
 
 class CreateUpdateProfileSerializer(serializers.ModelSerializer):
@@ -72,8 +72,8 @@ class StepSerializer(serializers.ModelSerializer):
 
 class RecipeDetailSerializer(serializers.ModelSerializer):
 	cuisine = CuisineSerializer()
-	course = CourseSerializer(many=True)
-	meal = MealSerializer(many=True)
+	courses = CourseSerializer(many=True)
+	meals = MealSerializer(many=True)
 	ingredients = IngredientSerializer(many=True)
 	steps = StepSerializer(many=True)
 
