@@ -41,6 +41,7 @@ class RecipeDetailView(RetrieveAPIView):
 
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
+	queryset = Recipe.objects.all()
 
 	def filter_by_ingredients(self, recipes, user_ingredients):
 		results = {'perfect': [], 'excess': [], 'missing': []}
@@ -55,11 +56,11 @@ class RecipeListView(APIView):
 		return results
 
 	def get(self,request):
-		recipes = Recipe.objects.all()
+		recipes = self.queryset
 		cuisine = request.GET.get("cuisine")
-		meals = loads(request.GET.get("meals"))
-		courses = loads(request.GET.get("courses"))
-		ingredients = loads(request.GET.get("ingredients"))
+		meals = loads(request.GET.get("meals")) if request.GET.get("meals") else None
+		courses = loads(request.GET.get("courses")) if request.GET.get("courses") else None
+		ingredients = loads(request.GET.get("ingredients")) if request.GET.get("ingredients") else None
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meals:
@@ -71,12 +72,12 @@ class RecipeListView(APIView):
 			return Response(self.serializer_class(recipes, context=context, many=True).data)
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
 		results = self.filter_by_ingredients(recipes=recipes, user_ingredients=set(ingredients))
-		data = {
+		serializer_data = {
 			'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
 			'user_excess_ingrs': self.serializer_class(results['excess'], context=context, many=True).data,
 			'user_missing_ingrs': self.serializer_class(results['missing'], context=context, many=True).data
 		}
-		return Response(data, status=HTTP_200_OK)
+		return Response(serializer_data, status=HTTP_200_OK)
 
 
 class ProfileView(RetrieveUpdateAPIView):
