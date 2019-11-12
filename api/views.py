@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from json import loads
+from rest_framework.settings import api_settings
 
 from .serializers import (
 	CourseSerializer, CreateUpdateProfileSerializer, CuisineSerializer,
@@ -39,8 +40,10 @@ class RecipeDetailView(RetrieveAPIView):
 	lookup_url_kwarg = 'recipe_id'
 
 
-class RecipeListView(APIView):
+class RecipeListView(ListAPIView):
+	queryset = Recipe.objects.all()
 	serializer_class = RecipeListSerializer
+	pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
 	def filter_by_ingredients(self, recipes, user_ingredients):
 		results = {'perfect': [], 'excess': [], 'missing': []}
@@ -55,11 +58,11 @@ class RecipeListView(APIView):
 		return results
 
 	def get(self,request):
-		recipes = Recipe.objects.all()
+		recipes = self.queryset
 		cuisine = request.GET.get("cuisine")
-		meals = loads(request.GET.get("meals"))
-		courses = loads(request.GET.get("courses"))
-		ingredients = loads(request.GET.get("ingredients"))
+		meals = loads(request.GET.get("meals")) if request.GET.get("meals") else None
+		courses = loads(request.GET.get("courses")) if request.GET.get("courses") else None
+		ingredients = loads(request.GET.get("ingredients")) if request.GET.get("ingredients") else None
 		if cuisine:
 			recipes = recipes.filter(cuisine=cuisine)
 		if meals:
@@ -68,15 +71,42 @@ class RecipeListView(APIView):
 			recipes = recipes.filter(courses__in=courses)
 		context = {'request': request}
 		if not ingredients:
-			return Response(self.serializer_class(recipes, context=context, many=True).data)
+			page = self.paginate_queryset(recipes)
+			if page is not None:
+				serializer = self.serializer_class(page, context=context, many=True)
+				return self.get_paginated_response(serializer.data)
+			# Unpaginated response:
+			# return Response(self.serializer_class(recipes, context=context, many=True).data)
 		recipes = recipes.filter(ingredients__id__in=ingredients).distinct()
 		results = self.filter_by_ingredients(recipes=recipes, user_ingredients=set(ingredients))
-		data = {
-			'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
-			'user_excess_ingrs': self.serializer_class(results['excess'], context=context, many=True).data,
-			'user_missing_ingrs': self.serializer_class(results['missing'], context=context, many=True).data
-		}
-		return Response(data, status=HTTP_200_OK)
+		# serializer_data = {
+		# 	'perfect_match': self.serializer_class(results['perfect'], context=context, many=True).data,
+		# 	'user_excess_ingrs': self.serializer_class(results['excess'], context=context, many=True).data,
+		# 	'user_missing_ingrs': self.serializer_class(results['missing'], context=context, many=True).data
+		# }
+		page = self.paginate_queryset(results['perfect']+results['excess']+results['missing'])
+		if page is not None:
+			serializer = self.serializer_class(page, context=context, many=True)
+			return self.get_paginated_response(serializer.data)
+		# return Response(serializer_data, status=HTTP_200_OK)
+
+	@property
+	def paginator(self):
+		if not hasattr(self, '_paginator'):
+			if self.pagination_class is None:
+				self._paginator = None
+			else:
+				self._paginator = self.pagination_class()
+		return self._paginator
+
+	def paginate_queryset(self, queryset):
+		if self.paginator is None:
+		 return None
+		return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+	def get_paginated_response(self, data):
+		assert self.paginator is not None
+		return self.paginator.get_paginated_response(data)
 
 
 class ProfileView(RetrieveUpdateAPIView):
@@ -89,3 +119,8 @@ class ProfileView(RetrieveUpdateAPIView):
 
 class UserCreateAPIView(CreateAPIView):
 	serializer_class = UserCreateSerializer
+
+
+class RecipeList(ListAPIView):
+	serializer_class = RecipeListSerializer
+	queryset = Recipe.objects.all()
