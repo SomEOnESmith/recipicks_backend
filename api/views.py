@@ -1,11 +1,8 @@
-from rest_framework.generics import (
-	CreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView,
-)
+from rest_framework.generics import CreateAPIView RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_200_OK
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
 from json import loads
 
 from .serializers import (
@@ -13,18 +10,18 @@ from .serializers import (
 	IngredientSerializer, MealSerializer, RecipeCreateSerializer,
 	RecipeDetailSerializer, RecipeListSerializer, UserCreateSerializer
 )
-from .models import Course, Cuisine, Ingredient, Meal, Profile, Recipe
+from .models import Course, Cuisine, Ingredient, Meal, Recipe
 
 
 class FilterView(APIView):
 	def get(self, request):
-		data = {
+		serializer_data = {
 			'ingredients': IngredientSerializer(Ingredient.objects.all(), many=True).data,
 			'cuisines': CuisineSerializer(Cuisine.objects.all(), many=True).data,
 			'courses': CourseSerializer(Course.objects.all(), many=True).data,
 			'meals': MealSerializer(Meal.objects.all(), many=True).data
 		}
-		return Response(data, status=HTTP_200_OK)
+		return Response(serializer_data, status=HTTP_200_OK)
 
 
 class RecipeCreateAPIView(CreateAPIView):
@@ -41,7 +38,6 @@ class RecipeDetailView(RetrieveAPIView):
 
 class RecipeListView(APIView):
 	serializer_class = RecipeListSerializer
-	queryset = Recipe.objects.all()
 
 	def filter_by_ingredients(self, recipes, user_ingredients):
 		results = {'perfect': [], 'excess': [], 'missing': []}
@@ -56,7 +52,7 @@ class RecipeListView(APIView):
 		return results
 
 	def get(self,request):
-		recipes = self.queryset
+		recipes = Recipe.objects.all()
 		cuisine = request.GET.get("cuisine")
 		meals = loads(request.GET.get("meals")) if request.GET.get("meals") else None
 		courses = loads(request.GET.get("courses")) if request.GET.get("courses") else None
