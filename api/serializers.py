@@ -1,13 +1,16 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import (Profile, Recipe, Cuisine, Ingredient, Course, Meal, Step)
+from django.contrib.auth.models import User
+from drf_writable_nested import WritableNestedModelSerializer
+
+from .models import Course, Cuisine, Image, Ingredient, Meal, Profile, Recipe, Step
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
+
 	class Meta:
 		model = User
-		fields = ['username', 'password']
+		fields = ('username', 'password')
 
 	def create(self, validated_data):
 		new_user = User(**validated_data)
@@ -19,8 +22,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ["username", "first_name", "last_name", "email"]
-		read_only_fields = ['username']
+		fields = ('username', 'first_name', 'last_name', 'email')
+		read_only_fields = ('username',)
 
 
 class CreateUpdateProfileSerializer(serializers.ModelSerializer):
@@ -38,7 +41,12 @@ class CreateUpdateProfileSerializer(serializers.ModelSerializer):
 		return instance
 
 
-  
+class CourseSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Course
+		fields = '__all__'
+
+
 class CuisineSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Cuisine
@@ -51,41 +59,55 @@ class IngredientSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
-class CourseSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Course
-		fields = '__all__'
-
-
 class MealSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Meal
 		fields = '__all__'
 
 
-class StepsSerializer(serializers.ModelSerializer):
+class StepSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Step
 		fields = '__all__'
 
 
-class RecipesListSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Recipe
-		fields = ['id','title','image']
-
-class RecipeDetailsSerializer(serializers.ModelSerializer):
+class RecipeDetailSerializer(serializers.ModelSerializer):
 	cuisine = CuisineSerializer()
-	course = CourseSerializer(many=True)
-	meal = MealSerializer(many=True)
+	courses = CourseSerializer(many=True)
+	meals = MealSerializer(many=True)
 	ingredients = IngredientSerializer(many=True)
-	steps = StepsSerializer(many=True)
+	steps = StepSerializer(many=True)
 
 	class Meta:
 		model = Recipe
 		fields =  '__all__'
 
 
+class RecipeListSerializer(serializers.ModelSerializer):
+	meals = MealSerializer(many=True)
+	cuisine = CuisineSerializer()
+
+	class Meta:
+		model = Recipe
+		exclude = ('description', 'courses')
 
 
-		
+class ImageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Image
+		fields = '__all__'
+
+
+class StepCreateSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Step
+		exclude = ('recipe', 'id')
+
+
+class RecipeCreateSerializer(WritableNestedModelSerializer):
+	steps = StepCreateSerializer(many=True)
+	# images = ImageSerializer(many=True)
+
+	class Meta:
+		model = Recipe
+		exclude = ('total_time','image')
