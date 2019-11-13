@@ -15,9 +15,9 @@ class Migration(migrations.Migration):
             name='category',
             field=models.CharField(blank=True, choices=[('Protein', 'Protein'), ('Vegetable', 'Vegetable'), ('Fruit', 'Fruit'), ('Dairy', 'Dairy'), ('Grain', 'Grain'), ('Bean', 'Bean'), ('Nut', 'Nut'), ('Others', 'Others')], max_length=20, null=True),
         ),
-        migrations.AlterField(
-            model_name='recipe',
-            name='total_time',
-            field=models.DurationField(blank=True, default='00:00:00', null=True),
-        ),
+        # migrations.AlterField(
+        #     model_name='recipe',
+        #     name='total_time',
+        #     field=models.DurationField(blank=True, default='00:00:00', null=True),
+        # ),
     ]

@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='recipe',
-            name='time',
-            field=models.PositiveIntegerField(blank=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='step',
-            name='required_time',
-            field=models.PositiveIntegerField(),
-        ),
+        # migrations.AddField(
+        #     model_name='recipe',
+        #     name='time',
+        #     field=models.PositiveIntegerField(blank=True, null=True),
+        # ),
+        # migrations.AlterField(
+        #     model_name='step',
+        #     name='required_time',
+        #     field=models.PositiveIntegerField(),
+        # ),
     ]

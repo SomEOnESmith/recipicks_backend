@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='recipe',
-            name='total_time',
-        ),
+        # migrations.RemoveField(
+        #     model_name='recipe',
+        #     name='total_time',
+        # ),
     ]

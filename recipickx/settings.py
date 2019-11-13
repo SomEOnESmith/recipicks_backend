@@ -94,14 +94,14 @@ WSGI_APPLICATION = 'recipickx.wsgi.application'
 # }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django',
-        'USER': 'django',
-        'PASSWORD': '0511547468edbd4ba9c1abee76a684c3',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
+	'default': {
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',
+		'NAME': 'django',
+		'USER': 'django',
+		'PASSWORD': '0511547468edbd4ba9c1abee76a684c3',
+		'HOST': 'localhost',
+		'PORT': '',
+	}
 }
 
 

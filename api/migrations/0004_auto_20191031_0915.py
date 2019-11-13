@@ -10,13 +10,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='recipe',
-            name='time',
-        ),
-        migrations.AddField(
-            model_name='recipe',
-            name='total_time',
-            field=models.PositiveIntegerField(default=0),
-        ),
+        # migrations.RemoveField(
+        #     model_name='recipe',
+        #     name='time',
+        # ),
+        # migrations.AddField(
+        #     model_name='recipe',
+        #     name='total_time',
+        #     field=models.PositiveIntegerField(default=0),
+        # ),
     ]
