@@ -12,14 +12,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='recipe',
-            name='total_time',
-            field=models.DurationField(default=datetime.datetime(2019, 11, 3, 11, 37, 57, 386706, tzinfo=utc)),
-        ),
-        migrations.AlterField(
-            model_name='step',
-            name='required_time',
-            field=models.DurationField(),
-        ),
+        # migrations.AlterField(
+        #     model_name='recipe',
+        #     name='total_time',
+        #     field=models.DurationField(default=datetime.datetime(2019, 11, 3, 11, 37, 57, 386706, tzinfo=utc)),
+        # ),
+        # migrations.AlterField(
+        #     model_name='step',
+        #     name='required_time',
+        #     field=models.DurationField(),
+        # ),
     ]
