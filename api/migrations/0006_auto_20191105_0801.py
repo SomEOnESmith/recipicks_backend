@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             name='user',
             field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
-        # migrations.AddField(
+        # migrations.AlterField(
         #     model_name='recipe',
         #     name='total_time',
         #     field=models.DurationField(default='00:00:00'),
