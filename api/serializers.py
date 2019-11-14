@@ -131,9 +131,10 @@ class RecipeCreateSerializer(WritableNestedModelSerializer):
 		new_recipe.meals.set(meals)
 		new_recipe.ingredients.set(ingredients)
 		new_recipe.save()
+		recipe_object = Recipe.objects.get(id=new_recipe.id)
 		for step in steps:
 			Step.objects.create(
 				instruction=step['instruction'], order=step['order'],
-				required_time=step['required_time'], recipe=Recipe.objects.get(id=new_recipe.id)
+				required_time=step['required_time'], recipe=recipe_object
 				)
 		return new_recipe
