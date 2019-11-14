@@ -6,9 +6,11 @@ drf-writable-nested==0.5.1
 gunicorn==20.0.0
 llvmlite==0.30.0
 Pillow==6.2.1
+pkg-resources==0.0.0
 psycopg2-binary==2.8.4
 PyJWT==1.7.1
 python-dateutil==2.8.1
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
+uuid==1.30
