@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from drf_writable_nested import WritableNestedModelSerializer
 
 from .models import Course, Cuisine, Image, Ingredient, Meal, Profile, Recipe, Step
-
+from .base64 import decode_base64
 
 class UserCreateSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
@@ -106,8 +106,34 @@ class StepCreateSerializer(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(WritableNestedModelSerializer):
 	steps = StepCreateSerializer(many=True)
+	image = serializers.CharField()
 	# images = ImageSerializer(many=True)
 
 	class Meta:
 		model = Recipe
-		exclude = ('total_time','image')
+		exclude = ('total_time',)
+
+	def create(self, validated_data):
+		title = validated_data['title']
+		description = validated_data['description']
+		courses = validated_data['courses']
+		cuisine = validated_data['cuisine']
+		ingredients = validated_data['ingredients']
+		meals = validated_data['meals']
+		steps = validated_data['steps']
+		new_image = validated_data['image']
+		data = decode_base64(new_image)
+		new_recipe = Recipe.objects.create(
+			title=title, description= description,
+			cuisine=cuisine, image = data
+		)
+		new_recipe.courses.set(courses)
+		new_recipe.meals.set(meals)
+		new_recipe.ingredients.set(ingredients)
+		new_recipe.save()
+		for step in steps:
+			Step.objects.create(
+				instruction=step['instruction'], order=step['order'],
+				required_time=step['required_time'], recipe=Recipe.objects.get(id=new_recipe.id)
+				)
+		return new_recipe
