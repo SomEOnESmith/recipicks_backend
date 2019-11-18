@@ -69,7 +69,7 @@ class Step(models.Model):
 	recipe = models.ForeignKey("Recipe", related_name="steps", on_delete=models.CASCADE)
 	
 	class Meta:
-		ordering = ['order',]
+		ordering = ('order',)
 
 	def __str__(self):
 		return self.recipe.title
